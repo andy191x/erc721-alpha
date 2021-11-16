@@ -30,15 +30,14 @@ contract AlphaNFT is ERC721, Ownable {
         returns (uint256)
     {
         // Verify supply
-        uint256 nextId = _tokenIds.current();
-        if (nextId > LAST_ID)
+        uint256 newItemId = _tokenIds.current();
+        if (newItemId > LAST_ID)
         {
             revert("Sold out.");
         }
         _tokenIds.increment();
 
         // Mint
-        uint256 newItemId = _tokenIds.current();
         _mint(recipient, newItemId);
         _setTokenURI(newItemId, tokenURI);
 

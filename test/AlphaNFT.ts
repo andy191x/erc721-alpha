@@ -28,7 +28,6 @@ describe("AlphaNFT", function () {
     });
 
     it("Should mint the first token", async function () {
-
         (await KSink.waitWriteMethod(contract.mint(walletAddress, 'https://191x.com/token/1')));
 
         let totalSupply = (await contract.totalSupply()).toNumber();
@@ -49,6 +48,12 @@ describe("AlphaNFT", function () {
         ).to.be.revertedWith('Ownable: caller is not the owner');
     });
 
+    it("Should revert when minting to address zero", async function () {
+        await expect(
+            KSink.waitWriteMethod(contract.mint(ethers.constants.AddressZero, 'https://191x.com/token/zero'))
+        ).to.be.revertedWith('ERC721: mint to the zero address');
+    });
+
     it("Should mint the remaining tokens", async function () {
         for (let i = 2; i <= LAST_ID; i++)
         {
@@ -59,10 +64,19 @@ describe("AlphaNFT", function () {
         expect(totalSupply).to.equal(LAST_ID);
     });
 
+
     it("Should revert when minting beyond the total supply", async function () {
         await expect(
             KSink.waitWriteMethod(contract.mint(walletAddress, 'https://191x.com/token/9999'))
         ).to.be.revertedWith('Sold out.');
+    });
+
+    it("Should verify token IDs", async function () {
+        for (let i = 0; i < LAST_ID; i++)
+        {
+            let token = (await contract.tokenByIndex(i)).toNumber();
+            expect(token).to.equal(i + 1);
+        }
     });
 
     // ...
