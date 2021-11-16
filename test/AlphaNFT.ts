@@ -10,14 +10,16 @@ describe("AlphaNFT", function () {
     let wallet: Signer;
     let walletAddress: string;
 
-    before(async function() {
-        const Contract = await ethers.getContractFactory("AlphaNFT");
-        contract = await Contract.deploy();
-        await contract.deployed();
+    const LAST_ID = 295;
 
+    before(async function() {
         const accounts = await ethers.getSigners();
         wallet = accounts[0];
         walletAddress = (await wallet.getAddress());
+
+        const Contract = await ethers.getContractFactory("AlphaNFT", wallet);
+        contract = await Contract.deploy();
+        await contract.deployed();
     });
 
     it("Should verify that no tokens have been minted", async function () {
@@ -35,7 +37,33 @@ describe("AlphaNFT", function () {
         let walletBalance = (await contract.balanceOf(walletAddress)).toNumber();
         expect(walletBalance).to.equal(1);
     });
-    
+
+    it("Should revert when minting from another wallet", async function () {
+        const accounts = await ethers.getSigners();
+        let wallet2 = accounts[1];
+        let walletAddress2 = (await wallet2.getAddress());
+        let contract2 = contract.connect(wallet2);
+
+        await expect(
+            KSink.waitWriteMethod(contract2.mint(walletAddress2, 'https://191x.com/token/9999'))
+        ).to.be.revertedWith('Ownable: caller is not the owner');
+    });
+
+    it("Should mint the remaining tokens", async function () {
+        for (let i = 2; i <= LAST_ID; i++)
+        {
+            (await KSink.waitWriteMethod(contract.mint(walletAddress, 'https://191x.com/token/' + i)));
+        }
+
+        let totalSupply = (await contract.totalSupply()).toNumber();
+        expect(totalSupply).to.equal(LAST_ID);
+    });
+
+    it("Should revert when minting beyond the total supply", async function () {
+        await expect(
+            KSink.waitWriteMethod(contract.mint(walletAddress, 'https://191x.com/token/9999'))
+        ).to.be.revertedWith('Sold out.');
+    });
 
     // ...
 });
