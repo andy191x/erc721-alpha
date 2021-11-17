@@ -10,7 +10,10 @@ describe("AlphaNFT", function () {
     let wallet: Signer;
     let walletAddress: string;
 
+    const FIRST_ID = 1;
     const LAST_ID = 295;
+
+    let deploymentOnly = false; // Measure constructor gas, then exit
 
     before(async function() {
         const accounts = await ethers.getSigners();
@@ -27,8 +30,12 @@ describe("AlphaNFT", function () {
         expect(totalSupply).to.equal(0);
     });
 
+    if (deploymentOnly) {
+        return;
+    }
+
     it("Should mint the first token", async function () {
-        (await KSink.waitWriteMethod(contract.mint(walletAddress, 'https://191x.com/token/1')));
+        (await KSink.waitWriteMethod(contract.mint(walletAddress)));
 
         let totalSupply = (await contract.totalSupply()).toNumber();
         expect(totalSupply).to.equal(1);
@@ -37,6 +44,7 @@ describe("AlphaNFT", function () {
         expect(walletBalance).to.equal(1);
     });
 
+    /**
     it("Should revert when minting from another wallet", async function () {
         const accounts = await ethers.getSigners();
         let wallet2 = accounts[1];
@@ -44,38 +52,44 @@ describe("AlphaNFT", function () {
         let contract2 = contract.connect(wallet2);
 
         await expect(
-            KSink.waitWriteMethod(contract2.mint(walletAddress2, 'https://191x.com/token/9999'))
+            KSink.waitWriteMethod(contract2.mint(walletAddress2))
         ).to.be.revertedWith('Ownable: caller is not the owner');
     });
+    */
 
     it("Should revert when minting to address zero", async function () {
         await expect(
-            KSink.waitWriteMethod(contract.mint(ethers.constants.AddressZero, 'https://191x.com/token/zero'))
+            KSink.waitWriteMethod(contract.mint(ethers.constants.AddressZero))
         ).to.be.revertedWith('ERC721: mint to the zero address');
     });
 
     it("Should mint the remaining tokens", async function () {
-        for (let i = 2; i <= LAST_ID; i++)
-        {
-            (await KSink.waitWriteMethod(contract.mint(walletAddress, 'https://191x.com/token/' + i)));
+        for (let i = (FIRST_ID + 1); i <= LAST_ID; i++) {
+            (await KSink.waitWriteMethod(contract.mint(walletAddress)));
         }
 
         let totalSupply = (await contract.totalSupply()).toNumber();
         expect(totalSupply).to.equal(LAST_ID);
     });
 
-
     it("Should revert when minting beyond the total supply", async function () {
         await expect(
-            KSink.waitWriteMethod(contract.mint(walletAddress, 'https://191x.com/token/9999'))
+            KSink.waitWriteMethod(contract.mint(walletAddress))
         ).to.be.revertedWith('Sold out.');
     });
 
     it("Should verify token IDs", async function () {
-        for (let i = 0; i < LAST_ID; i++)
-        {
-            let token = (await contract.tokenByIndex(i)).toNumber();
-            expect(token).to.equal(i + 1);
+        for (let i = FIRST_ID; i <= LAST_ID; i++) {
+            let tokenId = (await contract.tokenByIndex(i - FIRST_ID)).toNumber();
+            expect(tokenId).to.equal(i);
+        }
+    });
+
+    it("Should verify token URIs", async function () {
+        for (let i = FIRST_ID; i <= LAST_ID; i++) {
+            let tokenId = (await contract.tokenByIndex(i - FIRST_ID)).toNumber();
+            let tokenURI = (await contract.tokenURI(tokenId));
+            expect(tokenURI).to.have.length.greaterThan(0);
         }
     });
 
