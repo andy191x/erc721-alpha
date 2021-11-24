@@ -102,8 +102,9 @@ const main = async () => {
 
     for (let i = 0; i < data.card_array.length; i++) {
         let card = data.card_array[i];
+        let multiverseId: number = card.multiverse_ids[0];
 
-        l(card.name + ' (' + card.id + ') ...');
+        l(card.name + ' (' + multiverseId + ') ...');
 
         let imageURL = '';
         let ext = '';
@@ -128,7 +129,7 @@ const main = async () => {
             return 1;
         }
 
-        let file = folder + '/' + card.id + ext;
+        let file = folder + '/' + multiverseId + ext;
         try {
             fs.unlinkSync(file);
         }
@@ -177,7 +178,6 @@ const scryfallImageDownload = async (url: string, file: string, timeout_ms = 150
 
     // Success
     result.ok = true;
-
     return result;
 }
 
