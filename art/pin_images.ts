@@ -2,7 +2,7 @@
 
 //
 // Transfers downloaded scryfall images to pinata and generates a mapping object with the pinned IPFS urls.
-// Images must have been previously obtained with "scryall_getimages".
+// Images must have been previously obtained with "scryfall_getimages.ts".
 //
 
 import * as path from 'path';
@@ -39,26 +39,22 @@ const main = async () => {
         pinataAPISecret = process.argv[5];
     }
 
-    if (imageDictionaryFile.length == 0)
-    {
+    if (imageDictionaryFile.length == 0) {
         l('Usage: ' + usage());
         l_error('Invalid IMAGE_DICTIONARY_JSON.');
         return 1;
     }
-    if (imageFolder.length < 2)
-    {
+    if (imageFolder.length < 2) {
         l('Usage: ' + usage());
         l_error('Invalid IMAGE_FOLDER.');
         return 1;
     }
-    if (pinataAPIKey.length == 0)
-    {
+    if (pinataAPIKey.length == 0) {
         l('Usage: ' + usage());
         l_error('Invalid PINATA_API_KEY.');
         return 1;
     }
-    if (pinataAPISecret.length == 0)
-    {
+    if (pinataAPISecret.length == 0) {
         l('Usage: ' + usage());
         l_error('Invalid PINATA_API_SECRET.');
         return 1;
@@ -142,6 +138,7 @@ const main = async () => {
             else {
                 l_error(' - pin failed: ' + pinResult.error);
             }
+
             // Respect pinata's rate limits
             await new Promise(resolve => {
                 setTimeout(() => {
