@@ -89,7 +89,8 @@ describe("AlphaNFT", function () {
         for (let i = FIRST_ID; i <= LAST_ID; i++) {
             let tokenId = (await contract.tokenByIndex(i - FIRST_ID)).toNumber();
             let tokenURI = (await contract.tokenURI(tokenId));
-            expect(tokenURI).to.have.length.greaterThan(0);
+            expect(tokenURI).to.have.length.greaterThan(20);
+            expect(tokenURI).to.contain('ipfs://');
         }
     });
 
