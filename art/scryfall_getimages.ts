@@ -160,55 +160,26 @@ const l_error = (text: string) => {
 
 const scryfallImageDownload = async (url: string, file: string, timeout_ms = 15000): Promise<{ ok: boolean, error: string }> => {
     let result = { ok: false, error: 'Unknown error.' };
-    console.log('TODO download: ' + url + ' to ' + file);
-    return result;
-}
 
-/**
-const scryfallJSONGET = async (url: string, timeout_ms = 15000): Promise<{ ok: boolean, error: string, data: any }> => {
-
-    let result = { ok: false, error: 'Unknown error.', data: {} };
-
-    // Send request
-    let response: AxiosResponse|null = null;
-
+    // Send request, pipe data to file
     try {
         let config = {
             timeout: timeout_ms,
-            responseType: <ResponseType>'text'
+            responseType: <ResponseType>'stream'
         };
-        response = await axios.get(url, config);
-    } catch (e: any) {
-        result.error = 'Web request failed: ' + e.toString()
+        let response = await axios.get(url, config);
+        response.data.pipe(fs.createWriteStream(file));
+    }
+    catch (e: any) {
+        result.error = e.toString();
         return result;
     }
 
-    // Respect scryfall's rate limits
-    await new Promise(resolve => {
-        setTimeout(() => {
-            resolve('resolved');
-        }, 150);
-    });
-
-    //console.log(response);
-
-    // Parse response data
-    if (response === null) {
-        result.error = 'Invalid response format.';
-        return result;
-    }
-
-    if (response.data === null || typeof(response.data) != 'object') {
-        result.error = 'Invalid JSON response.';
-        return result;
-    }
-
+    // Success
     result.ok = true;
-    result.data = response.data;
 
     return result;
 }
-*/
 
 //
 // Script logic
