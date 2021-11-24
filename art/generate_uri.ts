@@ -1,10 +1,10 @@
-#!/usr/bin/env node
+#!/usr/bin/env ts-node
 
 //
 // Methods
 //
 
-let main = async () => {
+const main = async () => {
     //console.log('TODO: FINISH ME');
 
     for (let i = 0; i < 295; i++) {
@@ -18,8 +18,8 @@ let main = async () => {
 // Script logic
 //
 
-main().then(retCode => {
-    process.exitCode = retCode;
+main().then(exitCode => {
+    process.exitCode = exitCode;
 })
 .catch((e) => {
     console.log('Caught exception from main():');
