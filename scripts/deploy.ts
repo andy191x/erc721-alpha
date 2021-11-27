@@ -7,8 +7,11 @@ import * as hre from 'hardhat';
 
 async function main() {
     let contractName = 'AlphaNFT';
-    const ContractFactory = await hre.ethers.getContractFactory(contractName);
-    const contract = await ContractFactory.deploy();
+    const contractFactory = await hre.ethers.getContractFactory(contractName);
+
+    console.log('Deploying contract...');
+
+    const contract = await contractFactory.deploy();
     await contract.deployed();
 
     console.log('Contract deployed to: ', contract.address);

@@ -49,9 +49,27 @@ const main = async () => {
     }
 
     // Generate solidity URI array
+    //for (const [multiverseIdStr, ipfsUrl] of Object.entries(metadataDictionary)) {
+    //    console.log('_defaultURI[' + multiverseIdStr + '] = \'' + ipfsUrl + '\';');
+    //}
+
+    //for (const [multiverseIdStr, ipfsUrl] of Object.entries(metadataDictionary)) {
+    //    console.log('if (tokenId == ' + multiverseIdStr + ') { return \'' + ipfsUrl + '\'; }');
+    //}
+
+    /*
     for (const [multiverseIdStr, ipfsUrl] of Object.entries(metadataDictionary)) {
-        console.log('_defaultURI[' + multiverseIdStr + '] = \'' + ipfsUrl + '\';');
+        let temp: string = <string>ipfsUrl;
+        console.log('\'' + temp.replace('ipfs://', '') + '\',');
     }
+     */
+
+    let join = '';
+    for (const [multiverseIdStr, ipfsUrl] of Object.entries(metadataDictionary)) {
+        let temp: string = <string>ipfsUrl;
+        join += temp.replace('ipfs://', '');
+    }
+    console.log(join);
 
     return 0;
 }

@@ -22,7 +22,15 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
  * @type import('hardhat/config').HardhatUserConfig
  */
 module.exports = {
-  solidity: "0.7.3",
+  solidity: {
+    version: "0.7.3",
+    settings: {
+      optimizer: {
+        enabled: true,
+        runs: 200
+      }
+    }
+  },
   gasReporter: {
     enabled: true
   },
@@ -37,7 +45,7 @@ module.exports = {
     ropsten: {
       url: process.env.ROPSTEN_URL,
       chainId: 3,
-      accounts: [ process.env.ROPSTEN_PK ],
+      accounts: [ process.env.ROPSTEN_PK ]
     }
   }
 };
